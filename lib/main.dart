@@ -8,26 +8,26 @@ import 'fdata.dart';
 Map<int, NLatLng> coordinates = {
   1: NLatLng(37.227836,127.171029),
   8000: NLatLng(37.227731,127.169017),
-  8003: NLatLng(2.0, 3.0),
-  8101: NLatLng(1.5, 1.0),
-  8102: NLatLng(1.5, 2.5),
-  8103: NLatLng(1.0, 3.0),
-  8201: NLatLng(2.5, 4.0),
-  8301: NLatLng(2.0, 5.0),
-  8302: NLatLng(2.0, 6.0),
-  8303: NLatLng(1.5, 4.5),
-  8401: NLatLng(3.0, 3.0),
-  8402: NLatLng(3.0, 2.0),
-  91000: NLatLng(4.0, 1.0),
-  91004: NLatLng(4.5, 1.5),
+  8003: NLatLng(37.2277332,127.168934),
+  8101: NLatLng(37.227782,127.169223),
+  8102: NLatLng(37.227403,127.169395),
+  8103: NLatLng(37.227299,127.169175),
+  8201: NLatLng(37.227244,127.168613),
+  8301: NLatLng(37.226853,127.168807),
+  8302: NLatLng(37.227018,127.169199),
+  8303: NLatLng(37.227117, 127.169430),
+  8401: NLatLng(37.228073, 127.168324),
+  8402: NLatLng(37.228229, 127.169021),
+  91000: NLatLng(37.227937, 127.169927),
+  91004: NLatLng(37.228345, 127.169819),
   91101: NLatLng(37.227864,127.170327),
   91102: NLatLng(37.227610,127.170502),
-  91201: NLatLng(4.0, 2.0),
-  91301: NLatLng(4.0, 3.5),
-  91302: NLatLng(4.5, 4.0),
-  91303: NLatLng(4.0, 4.5),
-  91401: NLatLng(4.0, 2.5),
-  91402: NLatLng(4.5, 2.0)
+  91201: NLatLng(37.227910,127.169571),
+  91301: NLatLng(37.227680, 127.169804),
+  91302: NLatLng(37.227378,127.170001),
+  91303: NLatLng(37.227308, 127.169842),
+  91401: NLatLng(37.228417,127.169793),
+  91402: NLatLng(37.228399, 127.169974)
 };
 
 void main() async {
@@ -40,7 +40,7 @@ Future<void> _initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   String? clientId = await Properties.getNaverApiKey();
   await NaverMapSdk.instance.initialize(
-    clientId: "인증키 입력", // 클라이언트 ID 설정
+    clientId: "클라이언트 ID", // 클라이언트 ID 설정
     onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
   );
 }
@@ -63,6 +63,8 @@ class _NaverMapAppState extends State<NaverMapApp> {
     NLatLng(37.227836,127.171029),
     NLatLng(37.227610,127.170502),
     NLatLng(37.227864,127.170327),
+    NLatLng(37.227937, 127.169927),
+
   ];
 
   List<NLatLng> testTargets2 = [
@@ -184,9 +186,12 @@ class _NaverMapAppState extends State<NaverMapApp> {
   }
   Future<void> _onSearch() async {
     String query = _searchController.text;
+
     if (query.isNotEmpty) {
       // 쿼리를 정수로 변환하여 coordinates 맵의 키와 비교
       int? key = int.tryParse(query);
+      testTargets2 =[];
+      await _naverMapController.clearOverlays();
       testTargets2 = findroad(query);
       print(testTargets2);
 
