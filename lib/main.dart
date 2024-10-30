@@ -5,31 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'fdata.dart';
 
-Map<int, NLatLng> coordinates = {
-  1: NLatLng(37.227836,127.171029),
-  8000: NLatLng(37.227731,127.169017),
-  8003: NLatLng(37.2277332,127.168934),
-  8101: NLatLng(37.227782,127.169223),
-  8102: NLatLng(37.227403,127.169395),
-  8103: NLatLng(37.227299,127.169175),
-  8201: NLatLng(37.227244,127.168613),
-  8301: NLatLng(37.226853,127.168807),
-  8302: NLatLng(37.227018,127.169199),
-  8303: NLatLng(37.227117, 127.169430),
-  8401: NLatLng(37.228073, 127.168324),
-  8402: NLatLng(37.228229, 127.169021),
-  91000: NLatLng(37.227937, 127.169927),
-  91004: NLatLng(37.228345, 127.169819),
-  91101: NLatLng(37.227864,127.170327),
-  91102: NLatLng(37.227610,127.170502),
-  91201: NLatLng(37.227910,127.169571),
-  91301: NLatLng(37.227680, 127.169804),
-  91302: NLatLng(37.227378,127.170001),
-  91303: NLatLng(37.227308, 127.169842),
-  91401: NLatLng(37.228417,127.169793),
-  91402: NLatLng(37.228399, 127.169974)
-};
-
 void main() async {
   await _initialize();
   runApp(const NaverMapApp());
@@ -40,7 +15,8 @@ Future<void> _initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   String? clientId = await Properties.getNaverApiKey();
   await NaverMapSdk.instance.initialize(
-    // clientId: "클라이언드 ID",
+
+     clientId: "클라이언드 ID",
     onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"),
   );
 }
@@ -53,23 +29,21 @@ class NaverMapApp extends StatefulWidget {
 }
 
 class _NaverMapAppState extends State<NaverMapApp> {
-  final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+  final Completer<NaverMapController> _mapControllerCompleter =
+      Completer<NaverMapController>();
   late NaverMapController _naverMapController;
   final cameraUpdate1 = NCameraUpdate.zoomIn(); // 줌 레벨을 1만큼 증가시킵니다.
   final cameraUpdate2 = NCameraUpdate.zoomOut(); // 줌 레벨을 1만큼 감소시킵니다.
   final TextEditingController _searchController = TextEditingController();
 
   List<NLatLng> testTargets1 = [
-    NLatLng(37.227836,127.171029),
-    NLatLng(37.227610,127.170502),
-    NLatLng(37.227864,127.170327),
+    NLatLng(37.227836, 127.171029),
+    NLatLng(37.227610, 127.170502),
+    NLatLng(37.227864, 127.170327),
     NLatLng(37.227937, 127.169927),
-
   ];
 
-  List<NLatLng> testTargets2 = [
-
-  ];
+  List<NLatLng> testTargets2 = [];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +58,8 @@ class _NaverMapAppState extends State<NaverMapApp> {
                 indoorEnable: true,
                 locationButtonEnable: true,
                 consumeSymbolTapEvents: false,
-                extent: NLatLngBounds(// 지도 한반도로 제한 효과 없음
+                extent: NLatLngBounds(
+                  // 지도 한반도로 제한 효과 없음
                   southWest: NLatLng(31.43, 122.37),
                   northEast: NLatLng(44.35, 132.0),
                 ),
@@ -94,35 +69,40 @@ class _NaverMapAppState extends State<NaverMapApp> {
                   bearing: 0,
                   tilt: 0,
                 ),
-
               ),
-                onMapReady: (controller) async {
-                  final marker = NMarker(
-                    id: 'test',
-                    position: const NLatLng(37.2266747, 127.1681805),
-                  );
-                  controller.addOverlayAll({marker});
-                  NInfoWindow.onMap(id: marker.info.id, text: "text", position: const NLatLng(37.2266747, 127.1681805));
+              onMapReady: (controller) async {
+                final marker = NMarker(
+                  id: 'test',
+                  position: const NLatLng(37.2266747, 127.1681805),
+                );
+                controller.addOverlayAll({marker});
+                NInfoWindow.onMap(
+                    id: marker.info.id,
+                    text: "text",
+                    position: const NLatLng(37.2266747, 127.1681805));
 
-                  // NMultipartPathOverlay 추가
-                  NMultipartPathOverlay pathOverlay = NMultipartPathOverlay(
-                    id: "test",
-                    paths: [
-                      NMultipartPath(coords: testTargets2, color: Colors.red),
-                      // NMultipartPath(coords: testTargets2),
+                // NMultipartPathOverlay 추가
+                NMultipartPathOverlay pathOverlay = NMultipartPathOverlay(
+                  id: "test",
+                  paths: [
+                    NMultipartPath(coords: testTargets2, color: Colors.red),
+                    // NMultipartPath(coords: testTargets2),
+                  ],
+                  width: 5, // 경로 두께
+                );
+                // controller.removeOverlay(_marker.id); // 마커 제거
+                controller.addOverlay(pathOverlay); // 경로 오버레이 추가
 
-                    ],
-                    width: 5, // 경로 두께
-
-                  );
-                  // controller.removeOverlay(_marker.id); // 마커 제거
-                  controller.addOverlay(pathOverlay); // 경로 오버레이 추가
-
-                  mapControllerCompleter.complete(controller);
-                  _mapControllerCompleter.complete(controller);
-                  _naverMapController = controller;
-                  log("onMapReady", name: "onMapReady");
-                }
+                mapControllerCompleter.complete(controller);
+                _mapControllerCompleter.complete(controller);
+                _naverMapController = controller;
+                log("onMapReady", name: "onMapReady");
+              },  // 지도 첫 화면 보여주는 코드
+              onMapTapped: (NPoint point, NLatLng latLng) {
+                // 지도를 클릭했을 때 실행할 코드
+                log('지도 터치: 좌표 (${latLng.latitude}, ${latLng.longitude})',
+                    name: "onMapTap");
+              }, // 지도 클릭시 이벤트 발생 처리
             ),
             Positioned(
               top: 50, // 검색창을 화면 상단에 위치시킴
@@ -184,32 +164,41 @@ class _NaverMapAppState extends State<NaverMapApp> {
       ),
     );
   }
+
   Future<void> _onSearch() async {
     String query = _searchController.text;
 
     if (query.isNotEmpty) {
       // 쿼리를 정수로 변환하여 coordinates 맵의 키와 비교
       int? key = int.tryParse(query);
-      testTargets2 =[];
+      testTargets2 = [];
       await _naverMapController.clearOverlays();
       testTargets2 = findroad(query);
       print(testTargets2);
 
+      NMarker marker = NMarker(
+        id: 'start',
+        position: testTargets2.first,
+        iconTintColor: Colors.red,
+      );
 
+      NMarker marker2 = NMarker(
+          id: 'last', position: testTargets2.last, iconTintColor: Colors.green);
+
+      await _naverMapController.addOverlay(marker);
+      await _naverMapController.addOverlay(marker2);
 
       // 새로운 NMultipartPathOverlay 생성
       NMultipartPathOverlay pathOverlay = NMultipartPathOverlay(
         id: "testPath", // 오버레이 ID를 설정
         paths: [
-          NMultipartPath(coords: testTargets2, color: Colors.red), // 업데이트된 testTargets2 사용
+          NMultipartPath(coords: testTargets2, color: Colors.red),
+          // 업데이트된 testTargets2 사용
         ],
         width: 5, // 경로 두께
       );
-
       // 새로운 경로 오버레이 추가
       await _naverMapController.addOverlay(pathOverlay);
-
-
 
       // if (key != null && coordinates.containsKey(key)) {
       //   // 키가 존재하면 해당 좌표를 가져옴
@@ -242,5 +231,4 @@ class _NaverMapAppState extends State<NaverMapApp> {
       await _naverMapController.updateCamera(cameraUpdate2);
     }
   }
-
 }
